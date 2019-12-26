@@ -17,8 +17,17 @@
                 </ul>
             </div>
     </nav>
+    {% if points[0].cash < 5000 %}
+    <div class= "pointsred">
+            Points: {{points[0].cash}}
+    </div>
+    {% else %}
     <div class= "points">
             Points: {{points[0].cash}}
+    </div>
+    {% endif %}
+    <div class= "points">
+            Place: {{y}}/{{x}}
     </div>
 </header>
 </head>
@@ -42,7 +51,7 @@
               switch (value) {
 
                 case "yes":
-                  swal("Welcome to NBA50k pack opener!", "Your goal in this game is to get the highest networth (collection value + points) possible in order to climb to the top of the leaderboards. \n\n You will start with 50,000 points and you may use those to open packs and form a collection. \n\n Navigate using the navbar on the top of the site. \n\n On the homepage, players will accumulate as you pack them. You may click on a player for more information / to sell the player. \n\n Players are more valuable in your collection than when sold, but selling players will give you points which in turn will allow you to open more packs. \n\n Good luck!");
+                  swal("Welcome to NBA50k Pack Simulator!", "Your goal in this game is to get the highest networth (collection value + points) possible in order to climb to the top of the leaderboards. \n\n You will start with 50,000 points and you may use those to open packs and form a collection. \n\n Navigate using the navbar on the top of the site. \n\n On the homepage, players will accumulate as you pack them. You may click on a player for more information / to sell the player. \n\n Players are more valuable in your collection than when sold, but selling players will give you points which in turn will allow you to open more packs. \n\n Good luck!");
                   break;
 
                 default:
@@ -53,9 +62,7 @@
     {% endif %}
     <div class="container">
         <div class="overview">
-            <b>Username:</b> {{username[0].username}}
-            <br>
-            <b>Points:</b> {{points[0].cash}}
+            <b>Username:</b> {{username}}
             <br>
             <b>Collection Value:</b> {{total_value}}
             <br>
@@ -67,7 +74,7 @@
             {%for img in collection_images%}
                 <form style="display:inline-block;" action="/info" method="post">
                     <input name="img" style="display:none;" value="{{img['image']}}">
-                    <button class="btn btn-primary" type="submit"><img src= "{{img.image}}"/></button>
+                    <button class="cards" type="submit"><img src= "{{img.image}}"/></button>
                 </form>
             {% endfor %}
         </div>

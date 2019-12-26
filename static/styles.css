@@ -5,6 +5,15 @@
     color: black;
     font-weight:700;
 }
+
+.pointsred
+{
+    text-align: right;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    color: red;
+    font-weight:900;
+}
+
 .collection
 {
     font-size: 30pt;
@@ -69,4 +78,15 @@
     font-weight:700;
     font-size:75px;
     text-align:center;
+}
+
+.red
+{
+    color: red;
+    font-weight:500;
+}
+
+.cards
+{
+    button:focus {outline:0;}
 }

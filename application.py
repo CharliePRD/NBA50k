@@ -10,12 +10,13 @@ from flask import Flask,url_for
 
 from helpers import apology, login_required, usd
 
+# Configure application
 app = Flask(__name__)
 
+# Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-app.jinja_env.filters["usd"] = usd
-
+# Ensure responses aren't cached
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -23,13 +24,21 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+# Custom filter
+app.jinja_env.filters["usd"] = usd
 
+# Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///data.db")
+
+# Make sure API key is set
+if not os.environ.get("API_KEY"):
+    raise RuntimeError("API_KEY not set")
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -46,33 +55,78 @@ def home():
         total_overalls += x["overall"]
         counter += 1
     total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
+
+    #sets networth
+    total_overalls = 0
+    counter = 0
+    overalls = db.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+    for x in overalls:
+        total_overalls += x["overall"]
+        counter += 1
+    total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
+    networth = total_value + points[0]["cash"]
+    db.execute('UPDATE users SET networth=:networth WHERE id=:user_id', networth=networth, user_id=session["user_id"])
+
+    #gets place
+    y = 0
+    x = 1
+    username=username[0]["username"]
+    users = db.execute("SELECT * FROM users ORDER BY networth desc")
+    for user in users:
+        user["place"] = x
+        x += 1
+        if user["username"]==username:
+            y = user["place"]
+
     #stores all player data into collection_images
     collection_images = db.execute('SELECT * FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id ORDER BY overall desc', user_id=session["user_id"])
     networth = total_value + points[0]["cash"]
-    #updates the networth of the user based on the total overalls of the owned players * 65
-    db.execute('UPDATE users SET networth = ? WHERE id = ?', networth, session['user_id'])
+
     #Sets "instructions" so javascript whether or not to display them
     instructions = int(session['instructions'])
     if instructions == 1:
         session['instructions'] = 0
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=usd(networth), instructions=instructions)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=usd(networth), instructions=instructions, x=x, y=y)
     if request.method == "POST":
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=usd(networth), instructions=instructions)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=usd(networth), instructions=instructions, x=x, y=y)
     else:
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=usd(total_value), networth=usd(networth), instructions=instructions)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=usd(total_value), networth=usd(networth), instructions=instructions, x=x, y=y)
 
 @app.route("/openpacks", methods=["GET", "POST"])
 @login_required
 def openpacks():
-    #redirects to the openpacks htmls
     points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
-    return render_template("openpacks.html", points=points)
+    #sets networth
+    total_overalls = 0
+    counter = 0
+    overalls = db.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+    for x in overalls:
+        total_overalls += x["overall"]
+        counter += 1
+    total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
+    networth = total_value + points[0]["cash"]
+    db.execute('UPDATE users SET networth=:networth WHERE id=:user_id', networth=networth, user_id=session["user_id"])
+
+    #gets place
+    y = 0
+    x = 1
+    username = db.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
+    username=username[0]["username"]
+    users = db.execute("SELECT * FROM users ORDER BY networth desc")
+    for user in users:
+        user["place"] = x
+        x += 1
+        if user["username"]==username:
+            y = user["place"]
+    #redirects to the openpacks htmls
+    return render_template("openpacks.html", points=points, x=x, y=y)
 
 @app.route("/info", methods=["GET", "POST"])
 @login_required
 def info():
     points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
     if request.method == "POST":
+        user_id = session["user_id"]
         #Selects all the information of a player based on the image link of the form submitted when the player was clicked on from Home
         player = db.execute("SELECT * FROM players WHERE image=:img", img=request.form["img"])
         name= player[0]['name']
@@ -88,9 +142,33 @@ def info():
             selling_value = round(value*0.99)
         else:
             selling_value = round(value)
-        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value)
+
+        #sets networth
+        total_overalls = 0
+        counter = 0
+        overalls = db.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+        for x in overalls:
+            total_overalls += x["overall"]
+            counter += 1
+        total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
+        networth = total_value + points[0]["cash"]
+        db.execute('UPDATE users SET networth=:networth WHERE id=:user_id', networth=networth, user_id=session["user_id"])
+
+        #gets place
+        y = 0
+        x = 1
+        username = db.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
+        username=username[0]["username"]
+        users = db.execute("SELECT * FROM users ORDER BY networth desc")
+        for user in users:
+            user["place"] = x
+            x += 1
+            if user["username"]==username:
+                y = user["place"]
+
+        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value, x=x, y=y)
     else:
-        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value)
+        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value, x=x, y=y)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -110,6 +188,11 @@ def register():
         #checks that confirm password and password match
         if password != cpassword:
             return apology("password and confirm password must match", 403)
+        usernames = db.execute("SELECT username FROM users")
+        #confirms username doesn't exist
+        for y in usernames:
+            if username == y["username"]:
+                return apology("username already taken", 403)
         #inserts the new user into the users database
         session["user_id"] = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=username, hash=h_password)
         session['instructions'] = 1
@@ -146,21 +229,13 @@ def logout():
     session.clear()
     return redirect("/login")
 
-#@app.route("/refund")
-#def refund():
-    #THIS IS COMMENTED OUT AND NOT INCLUDED IN MY WEBSITE, BUT KEPT HERE SO THAT I COULD REIMPLIMENT LATER IF NEEDED. ALLOWS A PLAYER TO BE REFUNDED THEIR CASH SPENT ON A PACK.
-    #points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
-    #user_id = session['user_id']
-    #points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=user_id)
-    #points[0]["cash"] = points[0]["cash"] + 5000
-    #db.execute('UPDATE users SET cash = ? WHERE id = ?', points[0]["cash"], session['user_id'])
-    #return render_template("openpacks.html", points=points)
-
 @app.route("/leaderboard", methods=["GET", "POST"])
 @login_required
 def leaderboard():
     points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
+    username = db.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
     if request.method == "GET":
+        #sets networth
         total_overalls = 0
         counter = 0
         overalls = db.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
@@ -174,20 +249,23 @@ def leaderboard():
         #Stores all information of users in a list of dicts called users by descending networth
         users = db.execute("SELECT * FROM users ORDER BY networth desc")
         #creates places
+        y = 0
         x = 1
+        username = username[0]["username"]
         for user in users:
             user["place"] = x
             x += 1
-        return render_template("leaderboard.html", points=points, users=users)
+            if user["username"]==username:
+                y = user["place"]
+        return render_template("leaderboard.html", points=points, users=users, username=username, y=y, x=x)
     else:
-        return render_template("leaderboard.html", points=points, users=users)
+        return render_template("leaderboard.html", points=points, users=users, username=username, y=y, x=x)
 
 @app.route("/packs", methods=["GET", "POST"])
 #@login_required
 def packs():
-    points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
-    if request.method == 'GET':
         user_id=session["user_id"]
+        points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=user_id)
         #confirms user has enough money
         if not points[0]["cash"] >= 5000:
             return apology("Not Enough Points", 400)
@@ -211,23 +289,38 @@ def packs():
             else:
                 selling_value = round(value)
 
-            #THIS IS COMMENTED OUT AND NOT INCLUDED. WAS USED BEFORE TO NOT ALLOW DUPLICATE PLAYERS, BUT AS DESIGN.md SAYS I DECIDED AGAINST IT:
-            #player_ids = db.execute('SELECT player_id FROM collection WHERE id=:user_id', user_id=session['user_id'])
-            #player_found = 0
-            #for i in range(len(player_ids)):
-                #if random_player[0]["id"]==player_ids[i]["player_id"]:
-                    #player_found = 1
-            #if player_found == 0:
-
             #adds the newly drafted player into the user's collection
             db.execute('INSERT into collection(user_id, player_id) VALUES (:id, :random_player)', id=user_id, random_player=random_player[0]["id"])
-            return render_template("packs.html", random_player=random_player, points=points, selling_value=selling_value, image=image)
 
-            #else:
-                #points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
-                #return render_template("packs.html", random_player=0, points=points)
-    else:
-        return render_template("openpacks.html", points=points)
+            #sets networth
+            total_overalls = 0
+            counter = 0
+            overalls = db.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+            for x in overalls:
+                total_overalls += x["overall"]
+                counter += 1
+            total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
+            networth = total_value + points[0]["cash"]
+            db.execute('UPDATE users SET networth=:networth WHERE id=:user_id', networth=networth, user_id=session["user_id"])
+
+            #gets place
+            y = 0
+            x = 1
+            username = db.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
+            username=username[0]["username"]
+            users = db.execute("SELECT * FROM users ORDER BY networth desc")
+            for user in users:
+                user["place"] = x
+                x += 1
+                if user["username"]==username:
+                    y = user["place"]
+
+            if request.method == 'GET':
+                user_id=session["user_id"]
+                return render_template("packs.html", random_player=random_player, points=points, selling_value=selling_value, image=image, x=x, y=y)
+
+            else:
+                return render_template("openpacks.html", points=points, x=x, y=y)
 
 @app.route("/sell", methods=["GET", "POST"])
 @login_required

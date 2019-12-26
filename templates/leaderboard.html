@@ -16,9 +16,6 @@
                 </ul>
             </div>
     </nav>
-    <div class= "points">
-            Points: {{points[0].cash}}
-    </div>
 </header>
 </head>
 
@@ -36,9 +33,17 @@
     <tbody>
         {% for x in users %}
         <tr>
+            {% if x.username == username %}
+            <div>
+            <td class="red">{{x.place}}</td>
+            <td class="red">{{x.username}}</td>
+            <td class="red">${{x.networth}}</td>
+            </div>
+            {% else %}
             <td>{{x.place}}</td>
             <td>{{x.username}}</td>
             <td>${{x.networth}}</td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

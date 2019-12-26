@@ -16,8 +16,17 @@
                 </ul>
             </div>
     </nav>
+    {% if points[0].cash < 5000 %}
+    <div class="pointsred">
+            Points: {{points[0].cash}}
+    </div>
+    {% else %}
     <div class= "points">
             Points: {{points[0].cash}}
+    </div>
+    {% endif %}
+    <div class= "points">
+            Place: {{y}}/{{x}}
     </div>
 </header>
 </head>
