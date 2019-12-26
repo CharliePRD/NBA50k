@@ -12,9 +12,9 @@ from helpers import apology, login_required, usd
 
 app = Flask(__name__)
 
-app.jinja_env.filters["usd"] = usd
-
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+app.jinja_env.filters["usd"] = usd
 
 @app.after_request
 def after_request(response):
