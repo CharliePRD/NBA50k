@@ -34,3 +34,4 @@ valued players.
 
 The final tab, the leaderboard, shows the wealthiest users based on their net worth and which place they are all in.
 Once you are happy with where your net worth stands and don’t want to open more packs, you may log out.# NBA50k
+# NBA50k
