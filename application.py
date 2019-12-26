@@ -77,6 +77,7 @@ def home():
         x += 1
         if user["username"]==username:
             y = user["place"]
+    x = x-1
 
     #stores all player data into collection_images
     collection_images = db.execute('SELECT * FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id ORDER BY overall desc', user_id=session["user_id"])
@@ -118,6 +119,7 @@ def openpacks():
         x += 1
         if user["username"]==username:
             y = user["place"]
+    x = x-1
     #redirects to the openpacks htmls
     return render_template("openpacks.html", points=points, x=x, y=y)
 
@@ -165,6 +167,7 @@ def info():
             x += 1
             if user["username"]==username:
                 y = user["place"]
+        x = x-1
 
         return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value, x=x, y=y)
     else:
@@ -257,6 +260,7 @@ def leaderboard():
             x += 1
             if user["username"]==username:
                 y = user["place"]
+        x = x-1
         return render_template("leaderboard.html", points=points, users=users, username=username, y=y, x=x)
     else:
         return render_template("leaderboard.html", points=points, users=users, username=username, y=y, x=x)
@@ -314,6 +318,7 @@ def packs():
                 x += 1
                 if user["username"]==username:
                     y = user["place"]
+            x = x-1
 
             if request.method == 'GET':
                 user_id=session["user_id"]
