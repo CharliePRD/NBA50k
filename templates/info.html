@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="nav" id"navbar">
+                    <a class="navbar-brand" href="/">NBA50k Card Collector</a>
+                <ul class="navbar-nav mr-auto mt-2">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/openpacks">Open Packs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/leaderboard">Leaderboard</a></li>
+                </ul>
+                <ul class="navbar-nav ml-auto mt-2">
+                    <li class="nav-item"><a class="nav-link" href="/login">Logout</a></li>
+                </ul>
+            </div>
+    </nav>
+    <div class= "points">
+            Points: {{points[0].cash}}
+    </div>
+</header>
+</head>
+
+<body class="wood">
+    <center>
+        <div>
+            <img src= "{{image}}">
+        </div>
+        <div>
+            Name: {{name}}
+        </div>
+            Overall: {{overall}}
+        <div>
+            Value: {{value}}
+        </div>
+        <div>
+            Team: {{team}}
+        </div>
+            <a class="btn btn-primary" href="/" type="submit">Home</a>
+            <form style="display:inline-block;" action="/sell" method="post">
+                <input name="img" style="display:none;" value="{{image}}">
+                <button class="btn btn-primary" type="submit"><a> Sell for {{selling_value}} points! </a></button>
+            </form>
+    </center>
+</body>

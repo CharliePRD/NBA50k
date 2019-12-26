@@ -1,0 +1,72 @@
+.points
+{
+    text-align: right;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    color: black;
+    font-weight:700;
+}
+.collection
+{
+    font-size: 30pt;
+    text-align: center;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    color: black;
+    text-decoration: underline;
+    font-weight:700;
+}
+
+.empty
+{
+    text-align: center;
+    font-size:50pt
+}
+
+.font
+{
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    color: black;
+    font-weight:500;
+}
+
+.header
+{
+    text-align: center;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-size: 30px;
+    text-align: right;
+}
+
+.overview
+{
+  /* border: 1px solid white;
+  border-radius: 5px; */
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  color: black;
+  font-weight:700;
+  font-size:30px;
+}
+
+.home
+{
+    text-align: center;
+    font-size: 900px;
+}
+
+.login
+{
+    background-image:url('https://i.pinimg.com/originals/dc/eb/80/dceb80db40569f060a1197d7f8c58916.jpg');
+}
+
+.wood
+{
+    background-image: url('http://textures.world/wp-content/uploads/2018/10/Natural-Seamless-Light-Wood-Texture-1-copy.jpg');
+}
+
+.opening
+{
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    color: white;
+    font-weight:700;
+    font-size:75px;
+    text-align:center;
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link href="/static/styles.css" rel="stylesheet">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="nav" id"navbar">
+                    <a class="navbar-brand" href="/">NBA50k Card Collector</a>
+                <ul class="navbar-nav mr-auto mt-2">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/openpacks">Open Packs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/leaderboard">Leaderboard</a></li>
+                </ul>
+                <ul class="navbar-nav ml-auto mt-2">
+                    <li class="nav-item"><a class="nav-link" href="/login">Logout</a></li>
+                </ul>
+            </div>
+    </nav>
+    <div class= "points">
+            Points: {{points[0].cash}}
+    </div>
+</header>
+</head>
+
+<body class="wood">
+    {%if instructions==1 %}
+    <script>
+            swal({
+            title: "Welcome to NBA50k Card Collector!",
+            text: "Would you like to view instructions?",
+            icon: "https://officialpsds.com/imageview/r9/4w/r94wkw_large.png?1521316460",
+              buttons: {
+                cancel: "No",
+                catch: {
+                  text: "Yes",
+                  value: "yes",
+                },
+              },
+            })
+            .then((value) => {
+              switch (value) {
+
+                case "yes":
+                  swal("Welcome to NBA50k pack opener!", "Your goal in this game is to get the highest networth (collection value + points) possible in order to climb to the top of the leaderboards. \n\n You will start with 50,000 points and you may use those to open packs and form a collection. \n\n Navigate using the navbar on the top of the site. \n\n On the homepage, players will accumulate as you pack them. You may click on a player for more information / to sell the player. \n\n Players are more valuable in your collection than when sold, but selling players will give you points which in turn will allow you to open more packs. \n\n Good luck!");
+                  break;
+
+                default:
+                  closeModal: true;
+              }
+            });
+    </script>
+    {% endif %}
+    <div class="container">
+        <div class="overview">
+            <b>Username:</b> {{username[0].username}}
+            <br>
+            <b>Points:</b> {{points[0].cash}}
+            <br>
+            <b>Collection Value:</b> {{total_value}}
+            <br>
+            <b>Net Worth:</b> {{networth}}
+        </div>
+        <br>
+        <div>
+            <h1 class="collection">Collection</h1>
+            {%for img in collection_images%}
+                <form style="display:inline-block;" action="/info" method="post">
+                    <input name="img" style="display:none;" value="{{img['image']}}">
+                    <button class="btn btn-primary" type="submit"><img src= "{{img.image}}"/></button>
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
