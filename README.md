@@ -1,4 +1,4 @@
-Welcome to NBA50 Card Collector!
+Welcome to NBA50k Card Collector!
 
 The goal of this game is to achieve the largest net worth possible so that you can reach the highest place on the leaderboards.
 
@@ -28,7 +28,9 @@ total points, but rather your collection value + your total points. So, by selli
 However, selling the player will give you more points, allowing you to open more packs which will be beneficial if you’re
 lucky with your pack opening.
 
-The final tab, the leaderboard, shows the wealthiest users based on their net worth and which place they are all in.
-Once you are happy with where your net worth stands and don’t want to open more packs, you may log out.
+Strategies can be figured out in the game. For example, players are more valuable in your collection than when sold for points.
+However, points allow you to open more packs. Furthermore, lower-rated players sell for a higher % of their value than higher
+valued players.
 
-*Log into username:brian password:cs50 for a surprise!# NBA50k
+The final tab, the leaderboard, shows the wealthiest users based on their net worth and which place they are all in.
+Once you are happy with where your net worth stands and don’t want to open more packs, you may log out.# NBA50k
