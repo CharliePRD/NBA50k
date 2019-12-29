@@ -25,7 +25,7 @@ def after_request(response):
     return response
 
 # Custom filter
-usd = app.jinja_env.filters["usd"]
+# app.jinja_env.filters["usd"] = usd
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
@@ -87,11 +87,11 @@ def home():
     instructions = int(session['instructions'])
     if instructions == 1:
         session['instructions'] = 0
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=usd(networth), instructions=instructions, x=x, y=y)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=(networth), instructions=instructions, x=x, y=y)
     if request.method == "POST":
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=usd(networth), instructions=instructions, x=x, y=y)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=(networth), instructions=instructions, x=x, y=y)
     else:
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=usd(total_value), networth=usd(networth), instructions=instructions, x=x, y=y)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=usd(total_value), networth=(networth), instructions=instructions, x=x, y=y)
 
 @app.route("/openpacks", methods=["GET", "POST"])
 @login_required
@@ -169,9 +169,9 @@ def info():
                 y = user["place"]
         x = x-1
 
-        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value, x=x, y=y)
+        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=(value), selling_value=selling_value, x=x, y=y)
     else:
-        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value, x=x, y=y)
+        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=(value), selling_value=selling_value, x=x, y=y)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -282,7 +282,7 @@ def packs():
 
             overall = random_player[0]['overall']
             value = ((overall-78)*400) + 5000
-            random_player[0]["value"] = usd(value)
+            random_player[0]["value"] = (value)
             image = random_player[0]['image']
             if overall >= 95:
                 selling_value= round(value*0.95)
@@ -424,6 +424,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def usd(value):
-    """Format value as USD."""
-    return f"${value:,.2f}"
+# def usd(value):
+    # """Format value as USD."""
+    # return f"${value:,.2f}"
