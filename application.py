@@ -1,6 +1,6 @@
 import os
 # API Key= pk_367ebd64ed244414b161ecea3c984499
-# from cs50 import SQL
+from cs50 import SQL
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp

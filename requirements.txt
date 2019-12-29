@@ -2,3 +2,4 @@ Flask
 flask_session
 gunicorn
 requests
+cs50
