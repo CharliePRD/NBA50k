@@ -8,7 +8,7 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask,url_for
 
-# from helpers import apology, login_required, usd
+from helpers import apology, login_required, usd
 
 # Configure application
 app = Flask(__name__)
@@ -25,7 +25,7 @@ def after_request(response):
     return response
 
 # Custom filter
-# app.jinja_env.filters["usd"] = usd
+app.jinja_env.filters["usd"] = usd
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
@@ -34,56 +34,11 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("postgres://rooozmfwvvqrkw:eeffde2be78c3203ef421748bb17511f7dae337a45e9c57ab25e28cf9ddb2a0a@ec2-54-235-250-38.compute-1.amazonaws.com:5432/df0ic2g1r6uo40")
-# db = SQL("sqlite:///data.db")
+# db = SQL("postgres://rooozmfwvvqrkw:eeffde2be78c3203ef421748bb17511f7dae337a45e9c57ab25e28cf9ddb2a0a@ec2-54-235-250-38.compute-1.amazonaws.com:5432/df0ic2g1r6uo40")
+db = SQL("sqlite:///data.db")
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
-
-
-
-import os
-import requests
-import urllib.parse
-
-from flask import redirect, render_template, request, session
-from functools import wraps
-
-def apology(message, code=400):
-    """Render message as an apology to user."""
-    def escape(s):
-        """
-        Escape special characters.
-
-        https://github.com/jacebrowning/memegen#special-characters
-        """
-        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
-                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
-            s = s.replace(old, new)
-        return s
-    return render_template("apology.html", top=code, bottom=escape(message)), code
-
-
-def login_required(f):
-    """
-    Decorate routes to require login.
-
-    http://flask.pocoo.org/docs/1.0/patterns/viewdecorators/
-    """
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
-            return redirect("/login")
-        return f(*args, **kwargs)
-    return decorated_function
-
-# def usd(value):
-    # """Format value as USD."""
-    # return f"${value:,.2f}"
-
-
-
-
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -109,7 +64,6 @@ def home():
         total_overalls += x["overall"]
         counter += 1
     total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
-    print(points)
     networth = total_value + points[0]["cash"]
     db.execute('UPDATE users SET networth=:networth WHERE id=:user_id', networth=networth, user_id=session["user_id"])
 
@@ -133,11 +87,11 @@ def home():
     instructions = int(session['instructions'])
     if instructions == 1:
         session['instructions'] = 0
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=(networth), instructions=instructions, x=x, y=y)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=usd(networth), instructions=instructions, x=x, y=y)
     if request.method == "POST":
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=(networth), instructions=instructions, x=x, y=y)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=total_value, networth=usd(networth), instructions=instructions, x=x, y=y)
     else:
-        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=usd(total_value), networth=(networth), instructions=instructions, x=x, y=y)
+        return render_template("home.html", username=username, collection_images=collection_images, points=points, total_value=usd(total_value), networth=usd(networth), instructions=instructions, x=x, y=y)
 
 @app.route("/openpacks", methods=["GET", "POST"])
 @login_required
@@ -215,9 +169,9 @@ def info():
                 y = user["place"]
         x = x-1
 
-        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=(value), selling_value=selling_value, x=x, y=y)
+        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value, x=x, y=y)
     else:
-        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=(value), selling_value=selling_value, x=x, y=y)
+        return render_template("info.html", points=points, name=name, overall=overall, team=team, image=image, value=usd(value), selling_value=selling_value, x=x, y=y)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -328,7 +282,7 @@ def packs():
 
             overall = random_player[0]['overall']
             value = ((overall-78)*400) + 5000
-            random_player[0]["value"] = (value)
+            random_player[0]["value"] = usd(value)
             image = random_player[0]['image']
             if overall >= 95:
                 selling_value= round(value*0.95)
