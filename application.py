@@ -93,7 +93,6 @@ def home():
     total_overalls = 0
     counter = 0
     points = db.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
-    points = int(points[0]["cash"])
     username = db.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
     overalls = db.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
     #iterates through all players owned in collection and adds their overall into a single variable
@@ -110,7 +109,8 @@ def home():
         total_overalls += x["overall"]
         counter += 1
     total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
-    networth = total_value + points
+    print(points)
+    networth = total_value + points[0]["cash"]
     db.execute('UPDATE users SET networth=:networth WHERE id=:user_id', networth=networth, user_id=session["user_id"])
 
     #gets place
