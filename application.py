@@ -35,7 +35,7 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("postgres://rooozmfwvvqrkw:eeffde2be78c3203ef421748bb17511f7dae337a45e9c57ab25e28cf9ddb2a0a@ec2-54-235-250-38.compute-1.amazonaws.com:5432/df0ic2g1r6uo40")
-
+# db = SQL("sqlite:///data.db")
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
