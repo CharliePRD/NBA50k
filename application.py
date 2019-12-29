@@ -8,7 +8,7 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask,url_for
 
-from helpers.py import apology, login_required, usd
+# from helpers import apology, login_required, usd
 
 # Configure application
 app = Flask(__name__)
@@ -384,3 +384,46 @@ def sellfrompacks():
         db.execute('DELETE FROM collection WHERE player_id=:player_id AND user_id=:user_id ORDER BY RANDOM() LIMIT 1', player_id=player_id, user_id=session['user_id'])
         db.execute('UPDATE users SET cash = ? WHERE id = ?', points, session['user_id'])
         return redirect("/openpacks")
+
+
+
+
+
+import os
+import requests
+import urllib.parse
+
+from flask import redirect, render_template, request, session
+from functools import wraps
+
+    def apology(message, code=400):
+    """Render message as an apology to user."""
+    def escape(s):
+        """
+        Escape special characters.
+
+        https://github.com/jacebrowning/memegen#special-characters
+        """
+        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
+                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
+            s = s.replace(old, new)
+        return s
+    return render_template("apology.html", top=code, bottom=escape(message)), code
+
+
+def login_required(f):
+    """
+    Decorate routes to require login.
+
+    http://flask.pocoo.org/docs/1.0/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
+def usd(value):
+    """Format value as USD."""
+    return f"${value:,.2f}"
