@@ -1,17 +1,17 @@
 import os
 # API Key= pk_367ebd64ed244414b161ecea3c984499
-from cs50 import SQL
-from flask import Flask, flash, jsonify, redirect, render_template, request, session
-from flask_session import Session
+# from cs50 import SQL
+# from flask import Flask, flash, jsonify, redirect, render_template, request, session
+# from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Flask,url_for
+# from flask import Flask,url_for
 
 from helpers import apology, login_required, usd
 
 # Configure application
-app = Flask(__name__)
+# app = Flask(__name__)
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
