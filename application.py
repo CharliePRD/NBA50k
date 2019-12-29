@@ -34,11 +34,58 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("postgres://rooozmfwvvqrkw:eeffde2be78c3203ef421748bb17511f7dae337a45e9c57ab25e28cf9ddb2a0a@ec2-54-235-250-38.compute-1.amazonaws.com:5432/df0ic2g1r6uo40")
+# db = SQL("postgres://rooozmfwvvqrkw:eeffde2be78c3203ef421748bb17511f7dae337a45e9c57ab25e28cf9ddb2a0a@ec2-54-235-250-38.compute-1.amazonaws.com:5432/df0ic2g1r6uo40")
 # db = SQL("sqlite:///data.db")
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
+
+
+
+import os
+import requests
+import urllib.parse
+
+from flask import redirect, render_template, request, session
+from functools import wraps
+
+def apology(message, code=400):
+    """Render message as an apology to user."""
+    def escape(s):
+        """
+        Escape special characters.
+
+        https://github.com/jacebrowning/memegen#special-characters
+        """
+        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
+                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
+            s = s.replace(old, new)
+        return s
+    return render_template("apology.html", top=code, bottom=escape(message)), code
+
+
+def login_required(f):
+    """
+    Decorate routes to require login.
+
+    http://flask.pocoo.org/docs/1.0/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
+# def usd(value):
+    # """Format value as USD."""
+    # return f"${value:,.2f}"
+
+
+
+
+
+
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -384,46 +431,3 @@ def sellfrompacks():
         db.execute('DELETE FROM collection WHERE player_id=:player_id AND user_id=:user_id ORDER BY RANDOM() LIMIT 1', player_id=player_id, user_id=session['user_id'])
         db.execute('UPDATE users SET cash = ? WHERE id = ?', points, session['user_id'])
         return redirect("/openpacks")
-
-
-
-
-
-import os
-import requests
-import urllib.parse
-
-from flask import redirect, render_template, request, session
-from functools import wraps
-
-def apology(message, code=400):
-    """Render message as an apology to user."""
-    def escape(s):
-        """
-        Escape special characters.
-
-        https://github.com/jacebrowning/memegen#special-characters
-        """
-        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
-                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
-            s = s.replace(old, new)
-        return s
-    return render_template("apology.html", top=code, bottom=escape(message)), code
-
-
-def login_required(f):
-    """
-    Decorate routes to require login.
-
-    http://flask.pocoo.org/docs/1.0/patterns/viewdecorators/
-    """
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
-            return redirect("/login")
-        return f(*args, **kwargs)
-    return decorated_function
-
-# def usd(value):
-    # """Format value as USD."""
-    # return f"${value:,.2f}"
