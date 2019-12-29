@@ -1,1 +1,2 @@
 web: gunicorn application:app
+export API_KEY=pk_367ebd64ed244414b161ecea3c984499
