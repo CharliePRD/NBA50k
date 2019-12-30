@@ -41,10 +41,12 @@ DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 
-usernametest = cur.execute("SELECT username FROM users")
+cur.execute("SELECT username FROM users")
+usernametest = cur.fetchone()
+
 print("\n\n\n\n\n\n")
 print(usernametest)
-print ()
+
 # db = SQL("sqlite:///data.db")
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
