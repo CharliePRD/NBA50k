@@ -276,8 +276,8 @@ def register():
                 return apology("username already taken", 403)
         #inserts the new user into the users database
         cur.execute("INSERT INTO users (username, hash) VALUES (%s, %s)", (username, h_password))
-        session["user_id"] = cur.fetchone()[0]
         conn.commit()
+        session["user_id"] = cur.fetchone()[0]
         print("\n\n\n session ID:")
         print (session["user_id"])
         session['instructions'] = 1
