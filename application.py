@@ -42,8 +42,7 @@ conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 cur = conn.cursor()
 
 cur.execute("SELECT username FROM users")
-usernametest = cur.fetchone()
-usernametest = usernametest[0]
+usernametest = cur.fetchone()[0]
 
 print("\n\n\n\n\n\n")
 print(usernametest)
