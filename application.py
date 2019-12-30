@@ -275,7 +275,7 @@ def register():
             if username == y[0]:
                 return apology("username already taken", 403)
         #inserts the new user into the users database
-        cur.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=username, hash=h_password)
+        cur.execute("INSERT INTO users (username, hash) VALUES (%(str)s, $(str)s)", {'str' : username, 'str' : h_password})
         session["user_id"] = cur.fetchone()[0]
         conn.commit()
         print("\n\n\n session ID:")
