@@ -105,9 +105,12 @@ def home():
     #collects data neccessary from users and players
     total_overalls = 0
     counter = 0
-    points = cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
-    username = cur.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
-    overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+    cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
+    points = cur.fetchone()[0]
+    cur.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
+    username = cur.fetchone()[0]
+    cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+    overalls = cur.fetchall()
     #iterates through all players owned in collection and adds their overall into a single variable
     for x in overalls:
         total_overalls += x["overall"]
@@ -118,6 +121,7 @@ def home():
     total_overalls = 0
     counter = 0
     overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+    overalls = cur.fetchall()
     for x in overalls:
         total_overalls += x["overall"]
         counter += 1
@@ -131,6 +135,7 @@ def home():
     x = 1
     username=username[0]["username"]
     users = cur.execute("SELECT * FROM users ORDER BY networth desc")
+    users = cur.fetchall()
     for user in users:
         user["place"] = x
         x += 1
@@ -156,10 +161,12 @@ def home():
 @login_required
 def openpacks():
     points = cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
+    points = cur.fetchone()[0]
     #sets networth
     total_overalls = 0
     counter = 0
     overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+    overalls = cur.fetchall()
     for x in overalls:
         total_overalls += x["overall"]
         counter += 1
@@ -172,8 +179,10 @@ def openpacks():
     y = 0
     x = 1
     username = cur.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
+    username = cur.fetchone()[0]
     username=username[0]["username"]
     users = cur.execute("SELECT * FROM users ORDER BY networth desc")
+    users = cur.fetchall()
     for user in users:
         user["place"] = x
         x += 1
@@ -187,10 +196,12 @@ def openpacks():
 @login_required
 def info():
     points = cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
+    points = cur.fetchone()[0]
     if request.method == "POST":
         user_id = session["user_id"]
         #Selects all the information of a player based on the image link of the form submitted when the player was clicked on from Home
         player = cur.execute("SELECT * FROM players WHERE image=:img", img=request.form["img"])
+        player = cur.fetchall()
         name= player[0]['name']
         overall= player[0]['overall']
         team= player[0]['team']
@@ -209,6 +220,7 @@ def info():
         total_overalls = 0
         counter = 0
         overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+        overalls = cur.fetchall()
         for x in overalls:
             total_overalls += x["overall"]
             counter += 1
@@ -221,8 +233,10 @@ def info():
         y = 0
         x = 1
         username = cur.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
-        username=username[0]["username"]
+        username = cur.fetchone()[0]
+        # username=username[0]["username"]
         users = cur.execute("SELECT * FROM users ORDER BY networth desc")
+        users = cur.fetchall()
         for user in users:
             user["place"] = x
             x += 1
@@ -253,12 +267,15 @@ def register():
         if password != cpassword:
             return apology("password and confirm password must match", 403)
         usernames = cur.execute("SELECT username FROM users")
+        usernames = cur.fetchall()
         #confirms username doesn't exist
         for y in usernames:
             if username == y["username"]:
                 return apology("username already taken", 403)
         #inserts the new user into the users database
-        session["user_id"] = cur.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=username, hash=h_password)
+        cur.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=username, hash=h_password)
+        session["user_id"] = cur.fetchone()[0]
+        conn.commit()
         print("\n\n\n session ID:")
         print (session["user_id"])
         session['instructions'] = 1
@@ -279,6 +296,7 @@ def login():
             return apology("must provide password", 403)
 
         rows = cur.execute("SELECT * FROM users WHERE username = :username", username=request.form.get("username"))
+        usernames = cur.fetchall()
         #confirms the username and password exists in users
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             return apology("invalid username and/or password", 403)
@@ -298,13 +316,16 @@ def logout():
 @app.route("/leaderboard", methods=["GET", "POST"])
 @login_required
 def leaderboard():
-    points = cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
-    username = cur.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
+    cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
+    points = cur.fetchone()[0]
+    cur.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
+    usernames = cur.fetchone()[0]
     if request.method == "GET":
         #sets networth
         total_overalls = 0
         counter = 0
-        overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+        cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+        overalls = cur.fetchall()
         for x in overalls:
             total_overalls += x["overall"]
             counter += 1
@@ -337,9 +358,12 @@ def leaderboard():
 #@login_required
 def packs():
         user_id=session["user_id"]
-        points = cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=user_id)
+        cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=user_id)
+        points = cur.fetchone()[0]
+        print("\n\n\n\n\n points format:")
+        print(points)
         #confirms user has enough money
-        if not points[0]["cash"] >= 5000:
+        if not points >= 5000:
             return apology("Not Enough Points", 400)
         else:
             #subtracts cost of pack from the user and updates the users table
@@ -347,7 +371,8 @@ def packs():
             cur.execute('UPDATE users SET cash = ? WHERE id = ?', points[0]["cash"], session['user_id'])
             conn.commit()
             #selects a random player and stores this player's information in random_player
-            random_player = cur.execute('SELECT * FROM players ORDER BY RANDOM() LIMIT 1')
+            cur.execute('SELECT * FROM players ORDER BY RANDOM() LIMIT 1')
+            random_player = cur.fetchall()
 
             overall = random_player[0]['overall']
             value = ((overall-78)*400) + 5000
@@ -369,7 +394,8 @@ def packs():
             #sets networth
             total_overalls = 0
             counter = 0
-            overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+            cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=:user_id', user_id=session["user_id"])
+            overalls = cur.fetchall()
             for x in overalls:
                 total_overalls += x["overall"]
                 counter += 1
@@ -381,9 +407,10 @@ def packs():
             #gets place
             y = 0
             x = 1
-            username = cur.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
-            username=username[0]["username"]
-            users = cur.execute("SELECT * FROM users ORDER BY networth desc")
+            cur.execute("SELECT username FROM users WHERE id=:user_id", user_id=session["user_id"])
+            username = cur.fetchone()[0]
+            cur.execute("SELECT * FROM users ORDER BY networth desc")
+            users = cur.fetchall()
             for user in users:
                 user["place"] = x
                 x += 1
@@ -404,7 +431,8 @@ def sell():
     if request.method == 'GET':
         return redirect("/")
     if request.method == 'POST':
-        points = cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
+        cur.execute("SELECT cash FROM users WHERE id=:user_id", user_id=session["user_id"])
+        points = cur.fetchone()
         #selects all the player's data using the image submitted from the form on home.
         player = cur.execute("SELECT * FROM players WHERE image=:img", img=request.form["img"])
         points = points[0]['cash']
