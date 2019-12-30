@@ -121,7 +121,7 @@ def home():
     #sets networth
     total_overalls = 0
     counter = 0
-    overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE id= %s', [user_id])
+    overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id= %s', [user_id])
     overalls = cur.fetchall()
     for x in overalls:
         total_overalls += x["overall"]
@@ -148,7 +148,7 @@ def home():
     collection_images = cur.execute('SELECT * FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=%s ORDER BY overall desc', [user_id])
     networth = total_value + points[0]["cash"]
 
-    #Sets "instructions" so javascript whether or not to display them
+    #Sets "instructions" so javascript knows whether or not to display them
     instructions = int(session['instructions'])
     if instructions == 1:
         session['instructions'] = 0
