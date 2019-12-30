@@ -106,11 +106,11 @@ def home():
     total_overalls = 0
     counter = 0
     user_id = int(session["user_id"])
-    cur.execute("SELECT cash FROM users WHERE id= %d", [user_id])
+    cur.execute("SELECT cash FROM users WHERE id= %s", [user_id])
     points = cur.fetchone()[0]
-    cur.execute("SELECT username FROM users WHERE id= %d", [user_id])
+    cur.execute("SELECT username FROM users WHERE id= %s", [user_id])
     username = cur.fetchone()[0]
-    cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE id= %d', [user_id])
+    cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE id= %s', [user_id])
     overalls = cur.fetchall()
     #iterates through all players owned in collection and adds their overall into a single variable
     for x in overalls:
@@ -121,7 +121,7 @@ def home():
     #sets networth
     total_overalls = 0
     counter = 0
-    overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE id= %d', [user_id])
+    overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE id= %s', [user_id])
     overalls = cur.fetchall()
     for x in overalls:
         total_overalls += x["overall"]
@@ -129,7 +129,7 @@ def home():
     total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
     print(points)
     networth = total_value + points[0]["cash"]
-    cur.execute('UPDATE users SET networth=%d WHERE id= %d', [networth, user_id])
+    cur.execute('UPDATE users SET networth=%d WHERE id= %s', [networth, user_id])
     conn.commit()
     #gets place
     y = 0
@@ -145,7 +145,7 @@ def home():
     x = x-1
 
     #stores all player data into collection_images
-    collection_images = cur.execute('SELECT * FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=%d ORDER BY overall desc', [user_id])
+    collection_images = cur.execute('SELECT * FROM players JOIN collection ON collection.player_id = players.id WHERE user_id=%s ORDER BY overall desc', [user_id])
     networth = total_value + points[0]["cash"]
 
     #Sets "instructions" so javascript whether or not to display them
