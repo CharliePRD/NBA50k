@@ -277,7 +277,7 @@ def register():
         #inserts the new user into the users database
         cur.execute("INSERT INTO users (username, hash) VALUES (%s, %s)", (username, h_password))
         conn.commit()
-        cur.execute("SELECT user_id FROM users WHERE username = %s", username)
+        cur.execute("SELECT user_id FROM users WHERE username = %s", [username])
         session["user_id"] = cur.fetchone()[0]
         session['instructions'] = 1
         return redirect("/")
