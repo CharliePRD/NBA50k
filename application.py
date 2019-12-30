@@ -302,6 +302,7 @@ def login():
         cur.execute("SELECT * FROM users WHERE username = %s", [username])
         rows = cur.fetchall()
         #confirms the username and password exists in users
+        print("\n\n\n\n\n Rows: \n")
         print(rows)
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             return apology("invalid username and/or password", 403)
