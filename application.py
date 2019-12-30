@@ -43,6 +43,7 @@ cur = conn.cursor()
 
 cur.execute("SELECT username FROM users")
 usernametest = cur.fetchone()
+usernametest = usernametest[0]
 
 print("\n\n\n\n\n\n")
 print(usernametest)
