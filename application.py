@@ -267,12 +267,12 @@ def register():
         if password != cpassword:
             return apology("password and confirm password must match", 403)
         usernames = cur.execute("SELECT username FROM users")
-        usernames[0] = cur.fetchall()
+        usernames = cur.fetchall()[0]
         print("\n\n\n\n username format:")
         print(usernames)
         #confirms username doesn't exist
         for y in usernames:
-            if username == y[0]:
+            if username == y:
                 return apology("username already taken", 403)
         #inserts the new user into the users database
         cur.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=username, hash=h_password)
