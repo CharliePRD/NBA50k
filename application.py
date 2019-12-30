@@ -299,8 +299,8 @@ def login():
         elif not request.form.get("password"):
             return apology("must provide password", 403)
         username = request.form.get("username")
-        rows = cur.execute("SELECT * FROM users WHERE username = %s", [username])
-        usernames = cur.fetchall()
+        cur.execute("SELECT * FROM users WHERE username = %s", [username])
+        rows = cur.fetchall()
         #confirms the username and password exists in users
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             return apology("invalid username and/or password", 403)
