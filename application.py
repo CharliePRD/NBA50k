@@ -299,6 +299,10 @@ def leaderboard():
             total_overalls += x["overall"]
             counter += 1
         total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
+        print("\n\n\n\n\n points without [0][cash]:")
+        print(points)
+        print("\n\n\n\n\n\n points with [0][cash]")
+        print(points[0]["cash"])
         networth = total_value + points[0]["cash"]
         db.execute('UPDATE users SET networth=:networth WHERE id=:user_id', networth=networth, user_id=session["user_id"])
 
