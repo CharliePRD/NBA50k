@@ -249,8 +249,7 @@ def register():
                 return apology("username already taken", 403)
         #inserts the new user into the users database
         session["user_id"] = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=username, hash=h_password)
-        db.commit()
-        print("\n\n\n")
+        print("\n\n\n session ID:")
         print (session["user_id"])
         session['instructions'] = 1
         return redirect("/")
