@@ -110,7 +110,7 @@ def home():
     points = cur.fetchone()[0]
     cur.execute("SELECT username FROM users WHERE id= %s", [user_id])
     username = cur.fetchone()[0]
-    cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE id= %s', [user_id])
+    cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id= %s', [user_id])
     overalls = cur.fetchall()
     #iterates through all players owned in collection and adds their overall into a single variable
     for x in overalls:
