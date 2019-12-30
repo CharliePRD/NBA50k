@@ -114,7 +114,8 @@ def home():
     overalls = cur.fetchall()
     #iterates through all players owned in collection and adds their overall into a single variable
     for x in overalls:
-        total_overalls += x["overall"]
+        print(x)
+        total_overalls += x
         counter += 1
     total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
 
@@ -124,9 +125,10 @@ def home():
     overalls = cur.execute('SELECT overall FROM players JOIN collection ON collection.player_id = players.id WHERE user_id= %s', [user_id])
     overalls = cur.fetchall()
     for x in overalls:
-        total_overalls += x["overall"]
+        total_overalls += x
         counter += 1
     total_value= ((total_overalls-(counter*78))*400) + (counter)*5000
+    print("\n\n")
     print(points)
     networth = total_value + points[0]["cash"]
     cur.execute('UPDATE users SET networth=%d WHERE id= %s', [networth, user_id])
